@@ -70,6 +70,7 @@
 (cl-defun org-nlink-build-cache (&key skip-headings)
   "Update cache variables for targets and headings."
   (let ((entries (org-nlink--scan-1))
+        (width (frame-width))
         headings
         targets)
 
@@ -89,7 +90,8 @@
         (let* ((olp (plist-get entry-plist :olp))
                (olp-text (org-format-outline-path
                           (append (butlast olp)
-                                  (list (plist-get entry-plist :heading))))))
+                                  (list (plist-get entry-plist :heading)))
+                          width)))
           (remove-text-properties 0 (length olp-text) '(face) olp-text)
           (puthash olp-text entry-plist org-nlink-heading-cache)
           (push olp-text headings)))
