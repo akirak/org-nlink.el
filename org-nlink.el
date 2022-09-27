@@ -88,11 +88,13 @@
     (dolist (entry-plist entries)
       (unless skip-headings
         (let* ((olp (plist-get entry-plist :olp))
+               (heading (plist-get entry-plist :heading))
                (olp-text (org-format-outline-path
                           (append (butlast olp)
-                                  (list (plist-get entry-plist :heading)))
+                                  (list heading))
                           width)))
-          (remove-text-properties 0 (length olp-text) '(face) olp-text)
+          (remove-text-properties 0 (- (length olp-text) (length heading))
+                                  '(face) olp-text)
           (puthash olp-text entry-plist org-nlink-heading-cache)
           (push olp-text headings)))
 
