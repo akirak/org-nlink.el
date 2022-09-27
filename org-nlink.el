@@ -124,10 +124,11 @@
      (let ((use-cache nil))
        (org-map-entries
         (lambda ()
-          (prog1 (list :olp (org-get-outline-path 'self use-cache)
+          (prog1 (list :olp (mapcar #'org-link-display-format
+                                    (org-get-outline-path 'self use-cache))
                        :marker (point-marker)
                        :targets (org-nlink--scan-targets (org-entry-end-position))
-                       :heading (org-get-heading))
+                       :heading (org-link-display-format (org-get-heading)))
             (unless use-cache (setq use-cache t)))))))))
 
 (defun org-nlink--scan-targets (&optional bound)
