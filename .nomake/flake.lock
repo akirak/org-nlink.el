@@ -1,0 +1,78 @@
+{
+  "nodes": {
+    "compat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1662132224,
+        "narHash": "sha256-zWYjpJixxFCeYKr9Hzhb4gIhK+8ZZd+L1u3afeFaYR4=",
+        "ref": "refs/heads/master",
+        "rev": "e827a9f3e2ba585de8b07cd246534a15ec414a8b",
+        "revCount": 415,
+        "type": "git",
+        "url": "https://git.sr.ht/~pkal/compat"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://git.sr.ht/~pkal/compat"
+      }
+    },
+    "consult": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1664225214,
+        "narHash": "sha256-jzZC1yZ4X4n2NOpL+QyuNzNsOIyLa54ro+xLxv6y8qg=",
+        "owner": "minad",
+        "repo": "consult",
+        "rev": "2105d0bbace14f22a9e1864920af84e5f9c454d9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minad",
+        "repo": "consult",
+        "type": "github"
+      }
+    },
+    "consult-org-nlink": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1664297637,
+        "narHash": "sha256-+S3ZSqrBcPlRL9z3SFixuC0hfY2ZLb23SEWQD5G+QJ8=",
+        "owner": "akirak",
+        "repo": "org-nlink.el",
+        "rev": "9ff5e1cd20df5a82c5e4cc7821e330c1f20152be",
+        "type": "github"
+      },
+      "original": {
+        "owner": "akirak",
+        "repo": "org-nlink.el",
+        "type": "github"
+      }
+    },
+    "org-nlink": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1664297637,
+        "narHash": "sha256-+S3ZSqrBcPlRL9z3SFixuC0hfY2ZLb23SEWQD5G+QJ8=",
+        "owner": "akirak",
+        "repo": "org-nlink.el",
+        "rev": "9ff5e1cd20df5a82c5e4cc7821e330c1f20152be",
+        "type": "github"
+      },
+      "original": {
+        "owner": "akirak",
+        "repo": "org-nlink.el",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "compat": "compat",
+        "consult": "consult",
+        "consult-org-nlink": "consult-org-nlink",
+        "org-nlink": "org-nlink"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
