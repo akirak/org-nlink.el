@@ -57,7 +57,9 @@
 (defun consult-org-nlink-insert ()
   "Insert a link to an in-buffer target."
   (interactive)
-  (let ((ent (consult--multi (consult-org-nlink--sources))))
+  (let ((ent (consult--multi (consult-org-nlink--sources)
+                             :prompt "Insert a link: "
+                             :sort nil)))
     (when (plist-get (cdr ent) :match)
       (cl-case (plist-get (cdr ent) :category)
         (org-nlink-target
