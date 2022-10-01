@@ -59,7 +59,7 @@
   (interactive "P")
   (let* ((data (org-nlink-thing arg))
          (ent (consult--multi (consult-org-nlink--sources)
-                              :prompt "Insert a link: "
+                              :prompt "Insert a link to a target or heading: "
                               :initial (or (cadr data)
                                            (when data
                                              (buffer-substring-no-properties
