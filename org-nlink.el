@@ -192,7 +192,8 @@ negative, it selects words before the point."
      (t
       (error "Unallowed value for N: %d" n))))
    ((use-region-p)
-    (region-bounds))
+    (cons (car (region-bounds))
+          nil))
    (t
     (save-match-data
       (cond
