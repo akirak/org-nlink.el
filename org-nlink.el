@@ -162,26 +162,52 @@
               result)))
     result))
 
-(defun org-nlink-thing (&optional _n)
-  "Return (bounds . (target . text)) for a thing at point."
-  (if (use-region-p)
-      (region-bounds)
-    (save-match-data
-      (if (and (get-char-property (point) 'org-emphasis)
-               (thing-at-point-looking-at org-verbatim-re))
-          (cons (cons (match-beginning 0)
-                      (match-end 0))
-                (cons (match-string-no-properties 4)
-                      nil))
-        (if (thing-at-point-looking-at org-link-bracket-re)
+(defun org-nlink-thing (&optional n)
+  "Return (bounds . (target . text)) for a thing at point.
+
+If N is a number or '-, select words around the point. If the
+number is positive, it selects words after the point. If
+negative, it selects words before the point."
+  (if n
+      (cond
+       ((not (or (numberp n) (eq n '-)))
+        (error "N must be either a number or '-"))
+       ((or (eq n '-) (< n 0))
+        (when (eq n '-)
+          (setq n -1))
+        (if (thing-at-point-looking-at org-nlink-word-regexp)
+            (save-excursion
+              (let ((end (match-end 1)))
+                (forward-word n)
+                (cons (cons (point) end) nil)))
+          (error "Cannot find a word start")))
+       ((> n 0)
+        (if (thing-at-point-looking-at org-nlink-word-regexp)
+            (save-excursion
+              (let ((start (match-beginning 1)))
+                (forward-word n)
+                (cons (cons start (point)) nil)))
+          (error "Cannot find a word start")))
+       (t
+        (error "Unallowed value for N: %d" n)))
+    (if (use-region-p)
+        (region-bounds)
+      (save-match-data
+        (if (and (get-char-property (point) 'org-emphasis)
+                 (thing-at-point-looking-at org-verbatim-re))
             (cons (cons (match-beginning 0)
                         (match-end 0))
-                  (cons (match-string-no-properties 1)
-                        (match-string-no-properties 2)))
-          (when (thing-at-point-looking-at org-nlink-word-regexp)
-            (cons (cons (match-beginning 1)
-                        (match-end 1))
-                  nil)))))))
+                  (cons (match-string-no-properties 4)
+                        nil))
+          (if (thing-at-point-looking-at org-link-bracket-re)
+              (cons (cons (match-beginning 0)
+                          (match-end 0))
+                    (cons (match-string-no-properties 1)
+                          (match-string-no-properties 2)))
+            (when (thing-at-point-looking-at org-nlink-word-regexp)
+              (cons (cons (match-beginning 1)
+                          (match-end 1))
+                    nil))))))))
 
 (defun org-nlink-insert-new-link (target &optional description)
   "Insert a link to a new target.
