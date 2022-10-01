@@ -54,18 +54,27 @@
                 :items (plist-get plist :headings)))))
 
 ;;;###autoload
-(defun consult-org-nlink-insert ()
+(defun consult-org-nlink-insert (&optional arg)
   "Insert a link to an in-buffer target."
-  (interactive)
-  (let ((ent (consult--multi (consult-org-nlink--sources)
-                             :prompt "Insert a link: "
-                             :sort nil)))
-    (when (plist-get (cdr ent) :match)
-      (cl-case (plist-get (cdr ent) :category)
-        (org-nlink-target
-         (consult-org-nlink--insert-target-link (car ent)))
-        (org-nlink-heading
-         (consult-org-nlink--insert-heading-link (car ent)))))))
+  (interactive "P")
+  (let* ((data (org-nlink-thing arg))
+         (ent (consult--multi (consult-org-nlink--sources)
+                              :prompt "Insert a link: "
+                              :initial (or (cadr data)
+                                           (when data
+                                             (buffer-substring-no-properties
+                                              (caar data) (cdar data))))
+                              :sort nil)))
+    (atomic-change-group
+      (when data
+        (delete-region (caar data) (cdar data)))
+      (if (plist-get (cdr ent) :match)
+          (cl-case (plist-get (cdr ent) :category)
+            (org-nlink-target
+             (consult-org-nlink--insert-target-link (car ent)))
+            (org-nlink-heading
+             (consult-org-nlink--insert-heading-link (car ent))))
+        (org-nlink-insert-new-link (car ent) (cddr data))))))
 
 (defun consult-org-nlink--insert-target-link (target)
   "Insert a link to TARGET."

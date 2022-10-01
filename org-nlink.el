@@ -34,9 +34,27 @@
 
 (require 'org)
 
+;; Silence byte compiler
+(defvar org-capture-entry)
+(defvar org-refile-targets)
+(defvar org-refile-target-verify-function)
+(declare-function thing-at-point-looking-at "thingatpt")
+
 (defgroup org-nlink nil
   "Utilities for Org in-file links."
   :group 'org)
+
+(defconst org-nlink-word-regexp
+  (rx (*? (or (syntax string-quote)
+              (syntax character-quote)
+              (syntax open-parenthesis)))
+      word-start
+      (group (+ (not (any space))))
+      word-end
+      (*? (or (syntax string-quote)
+              (syntax character-quote)
+              (syntax close-parenthesis)
+              (syntax punctuation)))))
 
 (defvar org-nlink-target-cache nil)
 (defvar org-nlink-heading-cache nil)
@@ -143,6 +161,68 @@
                     :radio (looking-at ">"))
               result)))
     result))
+
+(defun org-nlink-thing (&optional _n)
+  "Return (bounds . (target . text)) for a thing at point."
+  (if (use-region-p)
+      (region-bounds)
+    (save-match-data
+      (if (and (get-char-property (point) 'org-emphasis)
+               (thing-at-point-looking-at org-verbatim-re))
+          (cons (cons (match-beginning 0)
+                      (match-end 0))
+                (cons (match-string-no-properties 4)
+                      nil))
+        (if (thing-at-point-looking-at org-link-bracket-re)
+            (cons (cons (match-beginning 0)
+                        (match-end 0))
+                  (cons (match-string-no-properties 1)
+                        (match-string-no-properties 2)))
+          (when (thing-at-point-looking-at org-nlink-word-regexp)
+            (cons (cons (match-beginning 1)
+                        (match-end 1))
+                  nil)))))))
+
+(defun org-nlink-insert-new-link (target &optional description)
+  "Insert a link to a new target.
+
+TARGET is the name of a link target. An optional DESCRIPTION is a
+link description, which is added if the created link points to a
+non-radio target."
+  (pcase (read-char-choice (format "Create [r]adio or [n]on-radio target named %s.\
+Optionally change the [d]escription (default %s)"
+                                   target
+                                   (when description
+                                     (format "\"%s\"" description)))
+                           (string-to-list "rnd"))
+    (?r
+     (insert target)
+     (org-nlink--insert-target (format "<<<%s>>>" target)))
+    (?n
+     (insert (org-link-make-string target description))
+     (org-nlink--insert-target (format "<<%s>>" target)))
+    (?d
+     (insert (org-link-make-string target (read-string "Description: " description)))
+     (org-nlink--insert-target (format "<<%s>>" target)))))
+
+(defun org-nlink--insert-target (string)
+  "Insert a link target into the file.
+
+STRING is a string of the link target. It is usually wrapped in a
+pair of two or three angles."
+  (let* ((filename (buffer-file-name (org-base-buffer (current-buffer))))
+         (org-refile-targets `((,filename :maxlevel . 99)))
+         (org-refile-target-verify-function nil)
+         (org-capture-entry `("" ""
+                              item
+                              (file+function
+                               ,filename
+                               (lambda ()
+                                 (goto-char (nth 3 (org-refile-get-location
+                                                    ,(format "Location of %s: " string)
+                                                    nil t)))))
+                              ,(concat string "%?"))))
+    (org-capture)))
 
 (provide 'org-nlink)
 ;;; org-nlink.el ends here
