@@ -111,7 +111,7 @@
                           (append (butlast olp)
                                   (list heading))
                           width)))
-          (remove-text-properties 0 (- (length olp-text) (length heading))
+          (remove-text-properties 0 (max 0 (- (length olp-text) (length heading)))
                                   '(face) olp-text)
           (puthash olp-text entry-plist org-nlink-heading-cache)
           (push olp-text headings)))
