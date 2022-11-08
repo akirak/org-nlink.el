@@ -57,24 +57,23 @@
 (defun consult-org-nlink-insert (&optional arg)
   "Insert a link to an in-buffer target."
   (interactive "P")
-  (let* ((data (org-nlink-thing arg))
-         (ent (consult--multi (consult-org-nlink--sources)
-                              :prompt "Insert a link to a target or heading: "
-                              :initial (or (cadr data)
-                                           (when data
-                                             (buffer-substring-no-properties
-                                              (caar data) (cdar data))))
-                              :sort nil)))
+  (pcase-let*
+      ((`((,begin . ,end) . (,link . ,text)) (org-nlink-thing arg))
+       (`(,sel . ,plist) (consult--multi (consult-org-nlink--sources)
+                                         :prompt "Insert a link to a target or heading: "
+                                         :initial (or text
+                                                      (buffer-substring-no-properties begin end))
+                                         :sort nil)))
     (atomic-change-group
-      (when data
-        (delete-region (caar data) (cdar data)))
-      (if (plist-get (cdr ent) :match)
-          (cl-case (plist-get (cdr ent) :category)
+      (when begin
+        (delete-region begin end))
+      (if (plist-get plist :match)
+          (cl-case (plist-get plist :category)
             (org-nlink-target
-             (consult-org-nlink--insert-target-link (car ent)))
+             (consult-org-nlink--insert-target-link sel))
             (org-nlink-heading
-             (consult-org-nlink--insert-heading-link (car ent))))
-        (org-nlink-insert-new-link (car ent) (cddr data))))))
+             (consult-org-nlink--insert-heading-link sel)))
+        (org-nlink-insert-new-link sel text)))))
 
 (defun consult-org-nlink--insert-target-link (target)
   "Insert a link to TARGET."
