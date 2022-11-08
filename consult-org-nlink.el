@@ -61,8 +61,9 @@
       ((`((,begin . ,end) . (,link . ,text)) (org-nlink-thing arg))
        (`(,sel . ,plist) (consult--multi (consult-org-nlink--sources)
                                          :prompt "Insert a link to a target or heading: "
-                                         :initial (or text
-                                                      (buffer-substring-no-properties begin end))
+                                         :initial (downcase
+                                                   (or text
+                                                       (buffer-substring-no-properties begin end)))
                                          :sort nil)))
     (atomic-change-group
       (when begin
