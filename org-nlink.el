@@ -113,8 +113,8 @@
                           width)))
           (remove-text-properties 0 (max 0 (- (length olp-text) (length heading)))
                                   '(face) olp-text)
-          (puthash olp-text entry-plist org-nlink-heading-cache)
-          (push olp-text headings)))
+          (puthash heading entry-plist org-nlink-heading-cache)
+          (push heading headings)))
 
       (pcase-dolist (`(,target . ,plist) (plist-get entry-plist :targets))
         (puthash target
