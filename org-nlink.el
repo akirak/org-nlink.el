@@ -158,7 +158,8 @@
                        :marker (point-marker)
                        :targets (org-nlink--scan-targets (org-entry-end-position))
                        :heading (org-link-display-format (org-get-heading)))
-            (unless use-cache (setq use-cache t)))))))))
+            (unless use-cache (setq use-cache t))))
+        nil nil 'archive)))))
 
 (defun org-nlink--scan-targets (&optional bound)
   "Return a list of link targets."
