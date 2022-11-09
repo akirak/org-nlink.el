@@ -59,11 +59,12 @@
   (interactive "P")
   (pcase-let*
       ((`((,begin . ,end) . (,link . ,text)) (org-nlink-thing arg))
+       (initial (or text
+                    (when (and begin end)
+                      (buffer-substring-no-properties begin end))))
        (`(,sel . ,plist) (consult--multi (consult-org-nlink--sources)
                                          :prompt "Insert a link to a target or heading: "
-                                         :initial (downcase
-                                                   (or text
-                                                       (buffer-substring-no-properties begin end)))
+                                         :initial (when initial (downcase initial))
                                          :sort nil)))
     (atomic-change-group
       (when begin
