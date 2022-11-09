@@ -72,20 +72,23 @@
       (if (plist-get plist :match)
           (cl-case (plist-get plist :category)
             (org-nlink-target
-             (consult-org-nlink--insert-target-link sel))
+             (consult-org-nlink--insert-target-link sel text))
             (org-nlink-heading
-             (consult-org-nlink--insert-heading-link sel)))
+             (consult-org-nlink--insert-heading-link sel text)))
         (org-nlink-insert-new-link sel text)))))
 
-(defun consult-org-nlink--insert-target-link (target)
+(defun consult-org-nlink--insert-target-link (target &optional text)
   "Insert a link to TARGET."
   (if-let (plist (gethash target org-nlink-target-cache))
       (insert (if (plist-get plist :radio)
                   target
-                (format "[[%s]]" target)))
+                (org-link-make-string
+                 target
+                 (or text
+                     (read-from-minibuffer "Description: " target)))))
     (error "Not found %s" target)))
 
-(defun consult-org-nlink--insert-heading-link (olp-text)
+(defun consult-org-nlink--insert-heading-link (olp-text &optional text)
   "Insert a link to a heading."
   (if-let (plist (gethash olp-text org-nlink-heading-cache))
       (progn
@@ -93,9 +96,10 @@
           (let ((inhibit-message t))
             (org-store-link nil 'interactive)))
         (let ((link (pop org-stored-links)))
-          (insert (org-link-make-string (car link)
-                                        (read-string "Description: "
-                                                     (nth 1 link))))))
+          (insert (org-link-make-string
+                   (car link)
+                   (or text
+                       (read-from-minibuffer "Description: " (nth 1 link)))))))
     (error "Not found %s" olp-text)))
 
 (provide 'consult-org-nlink)
