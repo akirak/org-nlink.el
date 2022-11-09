@@ -106,7 +106,7 @@
     (dolist (entry-plist entries)
       (unless skip-headings
         (let* ((olp (plist-get entry-plist :olp))
-               (heading (plist-get entry-plist :heading))
+               (heading (org-no-properties (plist-get entry-plist :heading)))
                (olp-text (org-format-outline-path
                           (append (butlast olp)
                                   (list heading))
