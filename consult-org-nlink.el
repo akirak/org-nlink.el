@@ -51,6 +51,7 @@
           (list :name "Headings"
                 :narrow ?h
                 :category 'org-nlink-heading
+                :annotate #'org-nlink-annotate-heading
                 :items (plist-get plist :headings)))))
 
 ;;;###autoload

@@ -135,6 +135,15 @@
                           (format " (%s)"))
                         'face 'font-lock-doc-face))))
 
+(defun org-nlink-annotate-heading (heading)
+  "Completion annotation function for `org-nlink-target'."
+  (when-let (plist (gethash heading org-nlink-heading-cache))
+    (concat (propertize (thread-last
+                          (butlast (plist-get plist :olp))
+                          (org-format-outline-path)
+                          (format " (%s)"))
+                        'face 'font-lock-doc-face))))
+
 (defun org-nlink--scan-1 (&optional buffer)
   "Return a list of plists containing entry information."
   (with-current-buffer (org-base-buffer (or buffer (current-buffer)))
