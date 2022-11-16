@@ -61,7 +61,7 @@
   (pcase-let*
       ((`((,begin . ,end) . (,link . ,text)) (org-nlink-thing arg))
        (initial (or text
-                    (unless (string-match-p org-link-types-re link)
+                    (unless (and link (string-match-p org-link-types-re link))
                       link)
                     (when (and begin end)
                       (buffer-substring-no-properties begin end))))
