@@ -76,10 +76,10 @@
       (if (plist-get plist :match)
           (cl-case (plist-get plist :category)
             (org-nlink-target
-             (consult-org-nlink--insert-target-link sel text))
+             (consult-org-nlink--insert-target-link sel initial))
             (org-nlink-heading
-             (consult-org-nlink--insert-heading-link sel text)))
-        (org-nlink-insert-new-link sel text)))))
+             (consult-org-nlink--insert-heading-link sel initial)))
+        (org-nlink-insert-new-link sel initial)))))
 
 (defun consult-org-nlink--insert-target-link (target &optional text)
   "Insert a link to TARGET."
