@@ -65,10 +65,11 @@
                       link)
                     (when (and begin end)
                       (buffer-substring-no-properties begin end))))
-       (`(,sel . ,plist) (consult--multi (consult-org-nlink--sources)
-                                         :prompt "Insert a link to a target or heading: "
-                                         :initial (when initial (downcase initial))
-                                         :sort nil)))
+       (`(,sel . ,plist) (let ((completion-ignore-case t))
+                           (consult--multi (consult-org-nlink--sources)
+                                           :prompt "Insert a link to a target or heading: "
+                                           :initial initial
+                                           :sort nil))))
     (atomic-change-group
       (when begin
         (delete-region begin end))
