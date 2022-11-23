@@ -59,6 +59,16 @@
 (defvar org-nlink-target-cache nil)
 (defvar org-nlink-heading-cache nil)
 
+(defmacro org-nlink-with-cache-disabled (&rest body)
+  "Evaluate BODY while org-element cache is disabled."
+  `(if (boundp 'org-element-use-cache)
+       (let ((orig-use-cache org-element-use-cache))
+         (setq org-element-use-cache nil)
+         (unwind-protect
+             (progn ,@body)
+           (setq org-element-use-cache orig-use-cache)))
+     ,@body))
+
 (defun org-nlink-read-target (prompt)
   "Returns a cons cell of a chosen target and its plist."
   (let ((target (completing-read prompt (org-nlink-target-completion))))
@@ -151,15 +161,16 @@
       (user-error "This function must be run in org-mode"))
     (org-with-wide-buffer
      (let ((use-cache nil))
-       (org-map-entries
-        (lambda ()
-          (prog1 (list :olp (mapcar #'org-link-display-format
-                                    (org-get-outline-path 'self use-cache))
-                       :marker (point-marker)
-                       :targets (org-nlink--scan-targets (org-entry-end-position))
-                       :heading (org-link-display-format (org-get-heading)))
-            (unless use-cache (setq use-cache t))))
-        nil nil 'archive)))))
+       (org-nlink-with-cache-disabled
+        (org-map-entries
+         (lambda ()
+           (prog1 (list :olp (mapcar #'org-link-display-format
+                                     (org-get-outline-path 'self use-cache))
+                        :marker (point-marker)
+                        :targets (org-nlink--scan-targets (org-entry-end-position))
+                        :heading (org-link-display-format (org-get-heading)))
+             (unless use-cache (setq use-cache t))))
+         nil nil 'archive))))))
 
 (defun org-nlink--scan-targets (&optional bound)
   "Return a list of link targets."
