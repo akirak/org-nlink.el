@@ -86,10 +86,13 @@
   (if-let (plist (gethash target org-nlink-target-cache))
       (insert (if (plist-get plist :radio)
                   target
-                (org-link-make-string
-                 target
-                 (or text
-                     (read-from-minibuffer "Description: " target)))))
+                (if (and text
+                         (string-equal-ignore-case target text))
+                    (org-link-make-string text)
+                  (org-link-make-string
+                   target
+                   (or text
+                       (read-from-minibuffer "Description: " target))))))
     (error "Not found %s" target)))
 
 (defun consult-org-nlink--insert-heading-link (olp-text &optional text)
