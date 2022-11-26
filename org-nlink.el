@@ -219,8 +219,18 @@ negative, it selects words before the point."
     (save-match-data
       (cond
        ((and (get-char-property (point) 'org-emphasis)
-             (thing-at-point-looking-at org-verbatim-re))
-        (cons (cons (match-beginning 0)
+             (when-let (face (get-char-property (point) 'face))
+               (and (listp face)
+                    (or (memq 'verbatim face)
+                        (memq 'italic face))))
+             (thing-at-point-looking-at org-emph-re))
+        (cons (cons (save-match-data
+                      (save-excursion
+                        (goto-char (match-beginning 0))
+                        ;; Apparently, org-emph-re can match text starting with
+                        ;; space. Skip space.
+                        (when (looking-at (rx (+ blank)))
+                          (match-end 0))))
                     (match-end 0))
               (cons (match-string-no-properties 4)
                     nil)))
