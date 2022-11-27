@@ -226,7 +226,8 @@ negative, it selects words before the point."
                                        italic
                                        org-verbatim
                                        org-code))))
-             (thing-at-point-looking-at org-emph-re))
+             (or (thing-at-point-looking-at org-emph-re)
+                 (thing-at-point-looking-at org-verbatim-re)))
         (cons (cons (save-match-data
                       (save-excursion
                         (goto-char (match-beginning 0))
