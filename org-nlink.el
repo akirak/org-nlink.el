@@ -221,8 +221,11 @@ negative, it selects words before the point."
        ((and (get-char-property (point) 'org-emphasis)
              (when-let (face (get-text-property (point) 'face))
                (and (listp face)
-                    (or (memq 'verbatim face)
-                        (memq 'italic face))))
+                    (cl-intersection face
+                                     '(verbatim
+                                       italic
+                                       org-verbatim
+                                       org-code))))
              (thing-at-point-looking-at org-emph-re))
         (cons (cons (save-match-data
                       (save-excursion
