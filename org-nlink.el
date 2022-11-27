@@ -219,7 +219,7 @@ negative, it selects words before the point."
     (save-match-data
       (cond
        ((and (get-char-property (point) 'org-emphasis)
-             (when-let (face (get-char-property (point) 'face))
+             (when-let (face (get-text-property (point) 'face))
                (and (listp face)
                     (or (memq 'verbatim face)
                         (memq 'italic face))))
