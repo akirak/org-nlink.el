@@ -293,7 +293,8 @@ pair of two or three angles."
                                                     ,(format "Location of %s: " string)
                                                     nil t)))))
                               ,(concat string "%?"))))
-    (org-capture)))
+    (org-nlink-with-cache-disabled
+     (org-capture))))
 
 (provide 'org-nlink)
 ;;; org-nlink.el ends here
