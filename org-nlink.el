@@ -292,9 +292,15 @@ pair of two or three angles."
                                  (goto-char (nth 3 (org-refile-get-location
                                                     ,(format "Location of %s: " string)
                                                     nil t)))))
-                              ,(concat string "%?"))))
+                              ,(concat string "%?")
+                              ;; Avoid annoying warnings
+                              :after-finalize org-nlink--reset-cache)))
     (org-nlink-with-cache-disabled
      (org-capture))))
+
+(defun org-nlink--reset-cache ()
+  (when (fboundp 'org-element-cache-reset)
+    (org-element-cache-reset)))
 
 (provide 'org-nlink)
 ;;; org-nlink.el ends here
