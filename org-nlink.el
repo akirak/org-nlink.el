@@ -294,13 +294,13 @@ pair of two or three angles."
                                                     nil t)))))
                               ,(concat string "%?")
                               ;; Avoid annoying warnings
-                              :after-finalize org-nlink--reset-cache)))
+                              :after-finalize org-nlink--refresh-cache)))
     (org-nlink-with-cache-disabled
      (org-capture))))
 
-(defun org-nlink--reset-cache ()
-  (when (fboundp 'org-element-cache-reset)
-    (org-element-cache-reset)))
+(defun org-nlink--refresh-cache ()
+  (when (fboundp 'org-element-cache-refresh)
+    (org-element-cache-refresh (point))))
 
 (provide 'org-nlink)
 ;;; org-nlink.el ends here
