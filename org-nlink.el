@@ -86,30 +86,47 @@
                                    (?  "[" (+? anything) "]")
                                    "]")))))
 
-(defun org-nlink-target-completion ()
+(defun org-nlink-target-completion (&optional files)
   "Return a completion table for targets."
-  (let ((items (plist-get (org-nlink-build-cache :skip-headings t) :targets)))
+  (let (items)
+    (cl-flet
+        ((get-targets (&rest args)
+           (plist-get (apply #'org-nlink-build-cache :skip-headings t args)
+                      :targets)))
+      (if files
+          (let ((files (copy-sequence files)))
+            (when-let (file (pop files))
+              (setq items (get-targets :file file)))
+            (dolist (file files)
+              (setq items (append items (get-targets :no-clear-cache t :file file)))))
+        (setq items (get-targets))))
     `(lambda (string pred action)
        (if (eq action 'metadata)
            '(metadata . ((category . org-nlink-target)
+                         ,@(when files
+                             '((group-function . org-nlink-group-target-by-file)))
                          (annotation-function . org-nlink-annotate-target)))
          (complete-with-action action ',items string pred)))))
 
-(cl-defun org-nlink-build-cache (&key skip-headings)
+(cl-defun org-nlink-build-cache (&key skip-headings no-clear-cache file)
   "Update cache variables for targets and headings."
-  (let ((entries (org-nlink--scan-1))
+  (let ((entries (org-nlink--scan-1 (when file
+                                      (or (find-buffer-visiting file)
+                                          (find-file-noselect file)))))
         (width (frame-width))
         headings
         targets)
 
     (if org-nlink-target-cache
-        (clrhash org-nlink-target-cache)
+        (unless no-clear-cache
+          (clrhash org-nlink-target-cache))
       (setq org-nlink-target-cache
             (make-hash-table :test #'equal)))
 
     (unless skip-headings
       (if org-nlink-heading-cache
-          (clrhash org-nlink-heading-cache)
+          (unless no-clear-cache
+            (clrhash org-nlink-heading-cache))
         (setq org-nlink-heading-cache
               (make-hash-table :test #'equal :size (length entries)))))
 
@@ -145,6 +162,17 @@
                           (format " (%s)"))
                         'face 'font-lock-doc-face))))
 
+(defun org-nlink-group-target-by-file (target transform)
+  (if transform
+      target
+    (when-let* ((plist (gethash target org-nlink-target-cache))
+                (marker (plist-get plist :marker)))
+      (thread-last
+        marker
+        (marker-buffer)
+        (buffer-file-name)
+        (abbreviate-file-name)))))
+
 (defun org-nlink-annotate-heading (heading)
   "Completion annotation function for `org-nlink-target'."
   (when-let (plist (gethash heading org-nlink-heading-cache))
@@ -178,7 +206,7 @@
     (save-match-data
       (while (re-search-forward org-target-regexp bound t)
         (push (list (match-string-no-properties 1)
-                    :point (point)
+                    :marker (point-marker)
                     :radio (looking-at ">"))
               result)))
     result))
