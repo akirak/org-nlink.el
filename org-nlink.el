@@ -330,5 +330,10 @@ pair of two or three angles."
   (when (fboundp 'org-element-cache-refresh)
     (org-element-cache-refresh (point))))
 
+;;;###autoload
+(defun org-nlink-insert-plain (files)
+  "Insert a target from FILES."
+  (insert (completing-read "Insert: " (org-nlink-target-completion files))))
+
 (provide 'org-nlink)
 ;;; org-nlink.el ends here
