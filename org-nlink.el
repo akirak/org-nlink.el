@@ -271,17 +271,34 @@ negative, it selects words before the point."
                         (if (looking-back (rx (+ blank)) (match-beginning 0))
                             (match-beginning 0)
                           (point)))))
-              (cons (match-string-no-properties 4)
+              (cons (org-nlink--sanitize-target (match-string-no-properties 4))
                     nil)))
        ((thing-at-point-looking-at org-link-bracket-re)
         (cons (cons (match-beginning 0)
                     (match-end 0))
-              (cons (match-string-no-properties 1)
+              (cons (org-nlink--sanitize-target (match-string-no-properties 1))
                     (match-string-no-properties 2))))
        ((thing-at-point-looking-at org-nlink-word-regexp)
         (cons (cons (match-beginning 1)
                     (match-end 1))
               nil)))))))
+
+(defun org-nlink--sanitize-target (string)
+  (let ((string (replace-regexp-in-string (rx (+ (any "\r\n\t "))) " " string))
+        (case-fold-search nil))
+    (if (or (org-nlink--proper-noun-p string)
+            (org-nlink--acronym-p string))
+        string
+      (downcase string))))
+
+(defun org-nlink--acronym-p (string)
+  (string-match-p (rx bol anything (*? anything) upper) string))
+
+(defun org-nlink--proper-noun-p (string)
+  (seq-find #'org-nlink--capital-word-p (cdr (split-string string " "))))
+
+(defun org-nlink--capital-word-p (string)
+  (char-uppercase-p (string-to-char string)))
 
 (defun org-nlink-insert-new-link (target &optional description)
   "Insert a link to a new target.

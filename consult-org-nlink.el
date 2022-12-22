@@ -61,10 +61,11 @@
   (pcase-let*
       ((`((,begin . ,end) . (,link . ,text)) (org-nlink-thing arg))
        (initial (or text
-                    (unless (and link (string-match-p org-link-types-re link))
+                    (when (and link (string-match-p org-link-types-re link))
                       link)
                     (when (and begin end)
-                      (buffer-substring-no-properties begin end))))
+                      (org-nlink--sanitize-target
+                       (buffer-substring-no-properties begin end)))))
        (`(,sel . ,plist) (let ((completion-ignore-case t))
                            (consult--multi (consult-org-nlink--sources)
                                            :prompt "Insert a link to a target or heading: "
