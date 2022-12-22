@@ -252,6 +252,7 @@ negative, it selects words before the point."
                     (cl-intersection face
                                      '(verbatim
                                        italic
+                                       bold
                                        org-verbatim
                                        org-code))))
              (or (thing-at-point-looking-at org-emph-re)
