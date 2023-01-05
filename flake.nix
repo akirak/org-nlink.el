@@ -39,5 +39,13 @@
         "org-nlink"
         "consult-org-nlink"
       ];
+      scripts.test = {
+        extraPackages = [
+          "buttercup"
+        ];
+        text = ''
+          emacs -batch -L . -l buttercup -f buttercup-run-discover
+        '';
+      };
     };
 }

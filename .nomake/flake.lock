@@ -1,13 +1,29 @@
 {
   "nodes": {
+    "buttercup": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1672167465,
+        "narHash": "sha256-bS62HrpEvpehEs5r5Q+YrJIUiGBpCnVs0oQLbMgUUkY=",
+        "owner": "jorgenschaefer",
+        "repo": "emacs-buttercup",
+        "rev": "21ded874f7af380b593776eac06a87cf7f7ae439",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jorgenschaefer",
+        "repo": "emacs-buttercup",
+        "type": "github"
+      }
+    },
     "compat": {
       "flake": false,
       "locked": {
-        "lastModified": 1662132224,
-        "narHash": "sha256-zWYjpJixxFCeYKr9Hzhb4gIhK+8ZZd+L1u3afeFaYR4=",
+        "lastModified": 1672796635,
+        "narHash": "sha256-oc9HY10sljDb0sEVsRIliUEN38bm/n4EpGWsUF+/o9o=",
         "ref": "refs/heads/master",
-        "rev": "e827a9f3e2ba585de8b07cd246534a15ec414a8b",
-        "revCount": 415,
+        "rev": "3ee973db10e7c52fe4d2dbcc871725162d7f0b3c",
+        "revCount": 596,
         "type": "git",
         "url": "https://git.sr.ht/~pkal/compat"
       },
@@ -19,11 +35,11 @@
     "consult": {
       "flake": false,
       "locked": {
-        "lastModified": 1664225214,
-        "narHash": "sha256-jzZC1yZ4X4n2NOpL+QyuNzNsOIyLa54ro+xLxv6y8qg=",
+        "lastModified": 1672677958,
+        "narHash": "sha256-v3CVoUJeRJtP9AivEvI92VYkHWgDNTHdhwZP+nIg3kk=",
         "owner": "minad",
         "repo": "consult",
-        "rev": "2105d0bbace14f22a9e1864920af84e5f9c454d9",
+        "rev": "201e46a911820d85db7670f93b2df50c4941303e",
         "type": "github"
       },
       "original": {
@@ -35,11 +51,11 @@
     "consult-org-nlink": {
       "flake": false,
       "locked": {
-        "lastModified": 1664297637,
-        "narHash": "sha256-+S3ZSqrBcPlRL9z3SFixuC0hfY2ZLb23SEWQD5G+QJ8=",
+        "lastModified": 1671479606,
+        "narHash": "sha256-bT2FCjZf5GVzTwhzfPKWEanQu6yiS91cbbNqBdoEsMk=",
         "owner": "akirak",
         "repo": "org-nlink.el",
-        "rev": "9ff5e1cd20df5a82c5e4cc7821e330c1f20152be",
+        "rev": "dc646fba8a255431a96e355a8d88f01309b081bb",
         "type": "github"
       },
       "original": {
@@ -51,11 +67,11 @@
     "org-nlink": {
       "flake": false,
       "locked": {
-        "lastModified": 1664297637,
-        "narHash": "sha256-+S3ZSqrBcPlRL9z3SFixuC0hfY2ZLb23SEWQD5G+QJ8=",
+        "lastModified": 1671479606,
+        "narHash": "sha256-bT2FCjZf5GVzTwhzfPKWEanQu6yiS91cbbNqBdoEsMk=",
         "owner": "akirak",
         "repo": "org-nlink.el",
-        "rev": "9ff5e1cd20df5a82c5e4cc7821e330c1f20152be",
+        "rev": "dc646fba8a255431a96e355a8d88f01309b081bb",
         "type": "github"
       },
       "original": {
@@ -66,6 +82,7 @@
     },
     "root": {
       "inputs": {
+        "buttercup": "buttercup",
         "compat": "compat",
         "consult": "consult",
         "consult-org-nlink": "consult-org-nlink",

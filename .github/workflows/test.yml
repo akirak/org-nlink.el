@@ -1,0 +1,19 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '*.md'
+      - '*.org'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v18
+    - run: nix run .#nomake -- org-nlink
+    - run: nix run .#test
