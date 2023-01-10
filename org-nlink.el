@@ -262,13 +262,15 @@ negative, it selects words before the point."
                         (goto-char (match-beginning 0))
                         ;; Apparently, org-emph-re can match text starting with
                         ;; space. Skip space.
-                        (if (looking-at (rx (+ blank)))
+                        (if (looking-at (rx (+ (or space (syntax open-parenthesis)))))
                             (match-end 0)
                           (point))))
                     (save-match-data
                       (save-excursion
                         (goto-char (match-end 0))
-                        (if (looking-back (rx (+ blank)) (match-beginning 0))
+                        (if (looking-back (rx (+ (or space punct
+                                                     (syntax close-parenthesis))))
+                                          (match-beginning 0))
                             (match-beginning 0)
                           (point)))))
               (cons (org-nlink--sanitize-target (match-string-no-properties 4))
