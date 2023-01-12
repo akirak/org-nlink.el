@@ -60,11 +60,13 @@
   (interactive "P")
   (pcase-let*
       ((`((,begin . ,end) . (,link . ,text)) (org-nlink-thing arg))
-       (initial (or text
-                    link
+       (initial (or link
                     (when (and begin end)
                       (org-nlink--sanitize-target
                        (buffer-substring-no-properties begin end)))))
+       (desc (or text
+                 (when (and begin end)
+                   (buffer-substring-no-properties begin end))))
        (`(,sel . ,plist) (let ((completion-ignore-case t))
                            (consult--multi (consult-org-nlink--sources)
                                            :prompt "Insert a link to a target or heading: "
@@ -76,10 +78,10 @@
       (if (plist-get plist :match)
           (cl-case (plist-get plist :category)
             (org-nlink-target
-             (consult-org-nlink--insert-target-link sel initial))
+             (consult-org-nlink--insert-target-link sel desc))
             (org-nlink-heading
-             (consult-org-nlink--insert-heading-link sel initial)))
-        (org-nlink-insert-new-link sel initial)))))
+             (consult-org-nlink--insert-heading-link sel desc)))
+        (org-nlink-insert-new-link sel desc)))))
 
 (defun consult-org-nlink--insert-target-link (target &optional text)
   "Insert a link to TARGET."
