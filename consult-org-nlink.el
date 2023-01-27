@@ -91,10 +91,11 @@
                 (if (and text
                          (string-equal-ignore-case target text))
                     (org-link-make-string text)
-                  (org-link-make-string
-                   target
-                   (or text
-                       (read-from-minibuffer "Description: " target))))))
+                  (let ((description (or text
+                                         (read-from-minibuffer "Description: " target))))
+                    (org-link-make-string target
+                                          (unless (equal description target)
+                                            description))))))
     (error "Not found %s" target)))
 
 (defun consult-org-nlink--insert-heading-link (olp-text &optional text)
