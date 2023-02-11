@@ -65,6 +65,7 @@
                       (org-nlink--sanitize-target
                        (buffer-substring-no-properties begin end)))))
        (desc (or text
+                 link
                  (when (and begin end)
                    (buffer-substring-no-properties begin end))))
        (`(,sel . ,plist) (let ((completion-ignore-case t))
