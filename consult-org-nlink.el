@@ -40,6 +40,14 @@
   :group 'consult
   :group 'org-nlink)
 
+(defcustom consult-org-nlink-insert-super-link t
+  "Whether to insert a super link to the selected heading.
+
+If this option is t, `consult-org-nlink-insert' command insert a
+super link when the user selects a heading. You need
+`org-super-links' library to use this feature."
+  :type 'boolean)
+
 (defun consult-org-nlink--sources ()
   "Return consult sources."
   (let ((plist (org-nlink-build-cache)))
@@ -102,7 +110,24 @@
 (defun consult-org-nlink--insert-heading-link (olp-text &optional text)
   "Insert a link to a heading."
   (if-let (plist (gethash olp-text org-nlink-heading-cache))
-      (progn
+      (if (and consult-org-nlink-insert-super-link
+               (or (require 'org-super-links nil t)
+                   (progn
+                     (message "org-super-links is not available")
+                     nil)))
+          (progn
+            (org-with-point-at (plist-get plist :marker)
+              (let ((inhibit-message t))
+                (org-super-links-store-link)))
+            (save-excursion
+              (org-super-links-insert-link))
+            (when-let (link (and (thing-at-point org-link-bracket-re)
+                                 (match-string-no-properties 1)))
+              (delete-region (match-beginning 0) (match-end 0))
+              (insert (org-link-make-string
+                       link
+                       (or text
+                           (read-from-minibuffer "Description: " (match-string-no-properties 1)))))))
         (org-with-point-at (plist-get plist :marker)
           (let ((inhibit-message t))
             (org-store-link nil 'interactive)))
