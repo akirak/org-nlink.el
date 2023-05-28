@@ -385,8 +385,7 @@ Optionally change the [d]escription (default %s)"
 
 STRING is a string of the link target. It is usually wrapped in a
 pair of two or three angles."
-  (let* ((filename (buffer-file-name (org-base-buffer (current-buffer))))
-         (org-refile-targets (thread-last
+  (let* ((org-refile-targets (thread-last
                                (org-nlink--default-files)
                                (mapcar (lambda (file)
                                          `(,file :maxlevel . 99)))))
