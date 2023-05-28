@@ -56,8 +56,25 @@
               (syntax close-parenthesis)
               (syntax punctuation)))))
 
+(defcustom org-nlink-extra-files #'ignore
+  "A function to return extra Org files.
+
+The function should return a list of Org files. `org-nlink'
+package will look for link targets in the extra files as well."
+  :type 'function)
+
 (defvar org-nlink-target-cache nil)
 (defvar org-nlink-heading-cache nil)
+
+(defun org-nlink--extra-files ()
+  "Return a list of extra Org files.
+
+See `org-nlink-extra-files'."
+  (funcall org-nlink-extra-files))
+
+(defun org-nlink--default-files ()
+  (seq-uniq (cons (abbreviate-file-name (buffer-file-name))
+                  (org-nlink--extra-files))))
 
 (defmacro org-nlink-with-cache-disabled (&rest body)
   "Evaluate BODY while org-element cache is disabled."
