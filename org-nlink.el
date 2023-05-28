@@ -342,21 +342,27 @@ Optionally change the [d]escription (default %s)"
      (org-nlink--insert-target (format "<<%s>>" target)))))
 
 (defun org-nlink--insert-target (string)
-  "Insert a link target into the file.
+  "Insert a link target into a file.
 
 STRING is a string of the link target. It is usually wrapped in a
 pair of two or three angles."
   (let* ((filename (buffer-file-name (org-base-buffer (current-buffer))))
-         (org-refile-targets `((,filename :maxlevel . 99)))
+         (org-refile-targets (thread-last
+                               (org-nlink--default-files)
+                               (mapcar (lambda (file)
+                                         `(,file :maxlevel . 99)))))
          (org-refile-target-verify-function nil)
          (org-capture-entry `("" ""
                               item
-                              (file+function
-                               ,filename
+                              (function
                                (lambda ()
-                                 (goto-char (nth 3 (org-refile-get-location
-                                                    ,(format "Location of %s: " string)
-                                                    nil t)))))
+                                 (pcase (org-refile-get-location
+                                         ,(format "Location of %s: " string)
+                                         nil t)
+                                   (`(,_ ,file ,_ ,point)
+                                    (switch-to-buffer (org-find-base-buffer-visiting file))
+                                    (widen)
+                                    (goto-char point)))))
                               ,(concat string "%?")
                               ;; Avoid annoying warnings
                               :after-finalize org-nlink--refresh-cache)))
