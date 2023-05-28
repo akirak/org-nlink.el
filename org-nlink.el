@@ -175,6 +175,11 @@ See `org-nlink-extra-files'."
   (when-let (plist (gethash target org-nlink-target-cache))
     (concat (propertize (thread-last
                           (plist-get plist :olp)
+                          (cons (thread-last
+                                  (plist-get plist :marker)
+                                  (marker-buffer)
+                                  (buffer-file-name)
+                                  (file-name-nondirectory)))
                           (org-format-outline-path)
                           (format " (%s)"))
                         'face 'font-lock-doc-face))))
