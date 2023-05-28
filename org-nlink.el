@@ -73,7 +73,10 @@ See `org-nlink-extra-files'."
   (funcall org-nlink-extra-files))
 
 (defun org-nlink--default-files ()
-  (seq-uniq (cons (abbreviate-file-name (buffer-file-name))
+  (seq-uniq (cons (thread-last
+                    (org-base-buffer (current-buffer))
+                    (buffer-file-name)
+                    (abbreviate-file-name))
                   (org-nlink--extra-files))))
 
 (defmacro org-nlink-with-cache-disabled (&rest body)
