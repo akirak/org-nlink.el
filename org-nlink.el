@@ -86,6 +86,27 @@ See `org-nlink-extra-files'."
            (setq org-element-use-cache orig-use-cache)))
      ,@body))
 
+;;;###autoload
+(defun org-nlink-open-link (link)
+  "Search the target from the current files and extra files.
+
+You can add this function to `org-open-link-functions'. This
+function takes a single argument, TARGET, which is a url or fuzzy
+link. Only fuzzy links are handled."
+  (unless (string-match-p org-link-types-re link)
+    (let ((regexp (regexp-quote (format "<<%s>>" link))))
+      (when-let (marker
+                 (catch 'found-target
+                   (dolist (file (org-nlink--default-files))
+                     (with-current-buffer (or (org-find-base-buffer-visiting file)
+                                              (find-file-noselect file))
+                       (org-with-wide-buffer
+                        (goto-char (point-min))
+                        (when (re-search-forward regexp nil t)
+                          (throw 'found-target (copy-marker (match-beginning 0)))))))))
+        (org-goto-marker-or-bmk marker)
+        t))))
+
 (defun org-nlink-read-target (prompt)
   "Returns a cons cell of a chosen target and its plist."
   (let ((target (completing-read prompt (org-nlink-target-completion
