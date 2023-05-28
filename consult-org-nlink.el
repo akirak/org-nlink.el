@@ -50,7 +50,7 @@ super link when the user selects a heading. You need
 
 (defun consult-org-nlink--sources ()
   "Return consult sources."
-  (let ((plist (org-nlink-build-cache)))
+  (let ((plist (org-nlink-build-cache :files (org-nlink--default-files))))
     (list (list :name "Targets"
                 :narrow ?t
                 :category 'org-nlink-target

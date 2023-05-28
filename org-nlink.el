@@ -88,7 +88,8 @@ See `org-nlink-extra-files'."
 
 (defun org-nlink-read-target (prompt)
   "Returns a cons cell of a chosen target and its plist."
-  (let ((target (completing-read prompt (org-nlink-target-completion))))
+  (let ((target (completing-read prompt (org-nlink-target-completion
+                                         (org-nlink--default-files)))))
     (when target (cons target (gethash target org-nlink-target-cache)))))
 
 ;;;###autoload
