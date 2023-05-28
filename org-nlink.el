@@ -63,6 +63,13 @@ The function should return a list of Org files. `org-nlink'
 package will look for link targets in the extra files as well."
   :type 'function)
 
+(defcustom org-nlink-target-verify-function nil
+  "Function to verify locations in `org-nlink-insert-new-link'.
+
+See the documentation of `org-refile-target-verify-function' for
+allowed values."
+  :type '(choice (const nil) function))
+
 (defvar org-nlink-target-cache nil)
 (defvar org-nlink-heading-cache nil)
 
@@ -389,7 +396,7 @@ pair of two or three angles."
                               (org-nlink--default-files)
                               (mapcar (lambda (file)
                                         `(,file :maxlevel . 99)))))
-        (org-refile-target-verify-function nil)
+        (org-refile-target-verify-function org-nlink-target-verify-function)
         (org-capture-entry `("" ""
                              item
                              (function
