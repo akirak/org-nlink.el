@@ -97,18 +97,20 @@ You can add this function to `org-open-link-functions'. This
 function takes a single argument, TARGET, which is a url or fuzzy
 link. Only fuzzy links are handled."
   (unless (string-match-p org-link-types-re link)
-    (let ((regexp (regexp-quote (format "<<%s>>" link))))
-      (when-let (marker
-                 (catch 'found-target
-                   (dolist (file (org-nlink--default-files))
-                     (with-current-buffer (or (org-find-base-buffer-visiting file)
-                                              (find-file-noselect file))
-                       (org-with-wide-buffer
-                        (goto-char (point-min))
-                        (when (re-search-forward regexp nil t)
-                          (throw 'found-target (copy-marker (match-beginning 0)))))))))
-        (org-goto-marker-or-bmk marker)
-        t))))
+    (let ((regexp (regexp-quote (format "<<%s>>" link)))
+          (orig-buffer (current-buffer)))
+      (if-let (point (catch 'found-target
+                       (dolist (file (org-nlink--default-files))
+                         (set-buffer (or (org-find-base-buffer-visiting file)
+                                         (find-file-noselect file)))
+                         (org-with-wide-buffer
+                          (goto-char (point-min))
+                          (when (re-search-forward regexp nil t)
+                            (throw 'found-target (match-beginning 0)))))))
+          (progn
+            (widen)
+            (goto-char point))
+        (set-buffer orig-buffer)))))
 
 (defun org-nlink-read-target (prompt)
   "Returns a cons cell of a chosen target and its plist."
