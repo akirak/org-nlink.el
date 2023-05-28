@@ -385,25 +385,25 @@ Optionally change the [d]escription (default %s)"
 
 STRING is a string of the link target. It is usually wrapped in a
 pair of two or three angles."
-  (let* ((org-refile-targets (thread-last
-                               (org-nlink--default-files)
-                               (mapcar (lambda (file)
-                                         `(,file :maxlevel . 99)))))
-         (org-refile-target-verify-function nil)
-         (org-capture-entry `("" ""
-                              item
-                              (function
-                               (lambda ()
-                                 (pcase (org-refile-get-location
-                                         ,(format "Location of %s: " string)
-                                         nil t)
-                                   (`(,_ ,file ,_ ,point)
-                                    (switch-to-buffer (org-find-base-buffer-visiting file))
-                                    (widen)
-                                    (goto-char point)))))
-                              ,(concat string "%?")
-                              ;; Avoid annoying warnings
-                              :after-finalize org-nlink--refresh-cache)))
+  (let ((org-refile-targets (thread-last
+                              (org-nlink--default-files)
+                              (mapcar (lambda (file)
+                                        `(,file :maxlevel . 99)))))
+        (org-refile-target-verify-function nil)
+        (org-capture-entry `("" ""
+                             item
+                             (function
+                              (lambda ()
+                                (pcase (org-refile-get-location
+                                        ,(format "Location of %s: " string)
+                                        nil t)
+                                  (`(,_ ,file ,_ ,point)
+                                   (switch-to-buffer (org-find-base-buffer-visiting file))
+                                   (widen)
+                                   (goto-char point)))))
+                             ,(concat string "%?")
+                             ;; Avoid annoying warnings
+                             :after-finalize org-nlink--refresh-cache)))
     (org-nlink-with-cache-disabled
      (org-capture))))
 
