@@ -125,12 +125,11 @@ See `org-nlink-extra-files'."
                          (annotation-function . org-nlink-annotate-target)))
          (complete-with-action action ',items string pred)))))
 
-(cl-defun org-nlink-build-cache (&key skip-headings no-clear-cache file)
+(cl-defun org-nlink-build-cache (&key skip-headings no-clear-cache files
+                                      ;; Deprecated; Use files instead
+                                      file)
   "Update cache variables for targets and headings."
-  (let ((entries (org-nlink--scan-1 (when file
-                                      (or (find-buffer-visiting file)
-                                          (find-file-noselect file)))))
-        (width (frame-width))
+  (let ((width (frame-width))
         headings
         targets)
 
@@ -145,27 +144,35 @@ See `org-nlink-extra-files'."
           (unless no-clear-cache
             (clrhash org-nlink-heading-cache))
         (setq org-nlink-heading-cache
-              (make-hash-table :test #'equal :size (length entries)))))
+              ;; Make the size customizable
+              (make-hash-table :test #'equal :size 500))))
 
-    (dolist (entry-plist entries)
-      (unless skip-headings
-        (let* ((olp (plist-get entry-plist :olp))
-               (heading (org-no-properties (plist-get entry-plist :heading)))
-               (olp-text (org-format-outline-path
-                          (append (butlast olp)
-                                  (list heading))
-                          width)))
-          (remove-text-properties 0 (max 0 (- (length olp-text) (length heading)))
-                                  '(face) olp-text)
-          (puthash heading entry-plist org-nlink-heading-cache)
-          (push heading headings)))
+    (dolist (file (or files
+                      (when file
+                        (ensure-list file))
+                      (list (buffer-file-name))))
+      (let ((entries (org-nlink--scan-1 (or (find-buffer-visiting file)
+                                            (find-file-noselect file)))))
+        (dolist (entry-plist entries)
+          (unless skip-headings
+            (let* ((olp (plist-get entry-plist :olp))
+                   (heading (org-no-properties (plist-get entry-plist :heading)))
+                   (olp-text (org-format-outline-path
+                              (append (list (file-name-nondirectory file))
+                                      (butlast olp)
+                                      (list heading))
+                              width)))
+              (remove-text-properties 0 (max 0 (- (length olp-text) (length heading)))
+                                      '(face) olp-text)
+              (puthash heading entry-plist org-nlink-heading-cache)
+              (push heading headings)))
 
-      (pcase-dolist (`(,target . ,plist) (plist-get entry-plist :targets))
-        (puthash target
-                 (append (list :olp (plist-get entry-plist :olp))
-                         plist)
-                 org-nlink-target-cache)
-        (push target targets)))
+          (pcase-dolist (`(,target . ,plist) (plist-get entry-plist :targets))
+            (puthash target
+                     (append (list :olp (plist-get entry-plist :olp))
+                             plist)
+                     org-nlink-target-cache)
+            (push target targets)))))
 
     (list :targets targets
           :headings headings)))
