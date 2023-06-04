@@ -141,5 +141,18 @@ super link when the user selects a heading. You need
                        (read-from-minibuffer "Description: " (nth 1 link)))))))
     (error "Not found %s" olp-text)))
 
+;;;###autoload
+(defun consult-org-nlink-isearch ()
+  "Convert the highlighted text in isearch to an Org link.
+
+You can bind this command in `isearch-mode-map'."
+  (interactive)
+  (pcase-exhaustive isearch-match-data
+    (`(,begin ,end . ,_)
+     (let ((string isearch-string))
+       ;; `isearch-mode' affect the active maps, so exit from it.
+       (isearch-done)
+       (consult-org-nlink-insert begin end :link string :text string)))))
+
 (provide 'consult-org-nlink)
 ;;; consult-org-nlink.el ends here
