@@ -63,34 +63,37 @@ super link when the user selects a heading. You need
                 :items (plist-get plist :headings)))))
 
 ;;;###autoload
-(defun consult-org-nlink-insert (&optional arg)
+(cl-defun consult-org-nlink-insert (begin end &key link text)
   "Insert a link to an in-buffer target."
-  (interactive "P")
-  (pcase-let*
-      ((`((,begin . ,end) . (,link . ,text)) (org-nlink-thing arg))
-       (initial (or link
-                    (when (and begin end)
-                      (org-nlink--sanitize-target
-                       (buffer-substring-no-properties begin end)))))
-       (desc (or text
-                 link
-                 (when (and begin end)
-                   (buffer-substring-no-properties begin end))))
-       (`(,sel . ,plist) (let ((completion-ignore-case t))
-                           (consult--multi (consult-org-nlink--sources)
-                                           :prompt "Insert a link to a target or heading: "
-                                           :initial initial
-                                           :sort nil))))
-    (atomic-change-group
-      (when begin
-        (delete-region begin end))
-      (if (plist-get plist :match)
-          (cl-case (plist-get plist :category)
-            (org-nlink-target
-             (consult-org-nlink--insert-target-link sel desc))
-            (org-nlink-heading
-             (consult-org-nlink--insert-heading-link sel desc)))
-        (org-nlink-insert-new-link sel desc)))))
+  (interactive (pcase-exhaustive (org-nlink-thing current-prefix-arg)
+                 (`((,begin . ,end) . (,link . ,text))
+                  (list begin end :link link :text text))
+                 (`nil
+                  (list nil nil))))
+  (let* ((initial (or link
+                      (when (and begin end)
+                        (org-nlink--sanitize-target
+                         (buffer-substring-no-properties begin end)))))
+         (desc (or text
+                   link
+                   (when (and begin end)
+                     (buffer-substring-no-properties begin end))))
+         (completion-ignore-case t))
+    (pcase (consult--multi (consult-org-nlink--sources)
+                           :prompt "Insert a link to a target or heading: "
+                           :initial initial
+                           :sort nil)
+      (`(,sel . ,plist)
+       (atomic-change-group
+         (when begin
+           (delete-region begin end))
+         (if (plist-get plist :match)
+             (cl-case (plist-get plist :category)
+               (org-nlink-target
+                (consult-org-nlink--insert-target-link sel desc))
+               (org-nlink-heading
+                (consult-org-nlink--insert-heading-link sel desc)))
+           (org-nlink-insert-new-link sel desc)))))))
 
 (defun consult-org-nlink--insert-target-link (target &optional text)
   "Insert a link to TARGET."
