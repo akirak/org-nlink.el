@@ -35,6 +35,9 @@
 (require 'consult)
 (require 'org-nlink)
 
+(declare-function org-super-links-insert-link "ext:org-super-links")
+(declare-function org-super-links-store-link "ext:org-super-links")
+
 (defgroup consult-org-nlink nil
   "Consult interface for org-nlink."
   :group 'consult
