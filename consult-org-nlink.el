@@ -69,8 +69,8 @@ super link when the user selects a heading. You need
 (cl-defun consult-org-nlink-insert (begin end &key link text)
   "Insert a link to an in-buffer target."
   (interactive (pcase-exhaustive (org-nlink-thing current-prefix-arg)
-                 (`((,begin . ,end) . (,link . ,text))
-                  (list begin end :link link :text text))
+                 (`((,begin . ,end) . ,rest)
+                  (list begin end :link (car rest) :text (cdr rest)))
                  (`nil
                   (list nil nil))))
   (let* ((initial (or link
