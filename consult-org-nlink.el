@@ -164,13 +164,17 @@ You can bind this command in `isearch-mode-map'."
   (pcase-exhaustive isearch-match-data
     (`(,begin ,end . ,_)
      ;; Normalize the matched string into one that doesn't contain newlines.
-     (let ((string (thread-first
-                     isearch-string
-                     (split-string "\n")
-                     (string-join " "))))
+     (pcase-let*
+         ((link (org-nlink--sanitize-target isearch-string))
+          (`(,begin . ,end) (save-excursion
+                              (goto-char begin)
+                              (when (thing-at-point-looking-at (regexp-quote isearch-string))
+                                (cons (match-beginning 0) (match-end 0)))))
+          (text (org-nlink--sanitize-target-1
+                 (buffer-substring-no-properties begin end))))
        ;; `isearch-mode' affect the active maps, so exit from it.
        (isearch-done)
-       (consult-org-nlink-insert begin end :link string :text string)))))
+       (consult-org-nlink-insert begin end :link link :text text)))))
 
 (provide 'consult-org-nlink)
 ;;; consult-org-nlink.el ends here

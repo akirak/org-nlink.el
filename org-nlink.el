@@ -349,12 +349,15 @@ negative, it selects words before the point."
               nil)))))))
 
 (defun org-nlink--sanitize-target (string)
-  (let ((string (replace-regexp-in-string (rx (+ (any "\r\n\t "))) " " string))
+  (let ((string (org-nlink--sanitize-target-1 string))
         (case-fold-search nil))
     (if (or (org-nlink--proper-noun-p string)
             (org-nlink--acronym-p string))
         string
       (downcase string))))
+
+(defun org-nlink--sanitize-target-1 (string)
+  (replace-regexp-in-string (rx (+ (any "\r\n\t "))) " " string))
 
 (defun org-nlink--acronym-p (string)
   (string-match-p (rx bol anything (*? anything) upper) string))
