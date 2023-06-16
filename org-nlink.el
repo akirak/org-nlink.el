@@ -324,7 +324,7 @@ negative, it selects words before the point."
                         nil)))
            ((thing-at-point-looking-at org-verbatim-re)
             (cons (org-nlink--matching-bound-1)
-                  (cons (org-nlink--sanitize-target (match-string-no-properties 4))
+                  (cons (org-nlink--sanitize-target-1 (match-string-no-properties 4))
                         nil)))
            (t
             ;; Fallback
