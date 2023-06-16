@@ -308,45 +308,60 @@ negative, it selects words before the point."
           nil))
    (t
     (save-match-data
-      (cond
-       ((and (get-char-property (point) 'org-emphasis)
-             (when-let (face (get-text-property (point) 'face))
-               (and (listp face)
-                    (cl-intersection face
-                                     '(verbatim
-                                       italic
-                                       bold
-                                       org-verbatim
-                                       org-code))))
-             (or (thing-at-point-looking-at org-emph-re)
-                 (thing-at-point-looking-at org-verbatim-re)))
-        (cons (cons (save-match-data
-                      (save-excursion
-                        (goto-char (match-beginning 0))
-                        ;; Apparently, org-emph-re can match text starting with
-                        ;; space. Skip space.
-                        (if (looking-at (rx (+ (or space (syntax open-parenthesis)))))
-                            (match-end 0)
-                          (point))))
-                    (save-match-data
-                      (save-excursion
-                        (goto-char (match-end 0))
-                        (if (looking-back (rx (+ (or space punct
-                                                     (syntax close-parenthesis))))
-                                          (match-beginning 0))
-                            (match-beginning 0)
-                          (point)))))
-              (cons (org-nlink--sanitize-target (match-string-no-properties 4))
-                    nil)))
-       ((thing-at-point-looking-at org-link-bracket-re)
-        (cons (cons (match-beginning 0)
-                    (match-end 0))
-              (cons (org-nlink--sanitize-target (match-string-no-properties 1))
-                    (match-string-no-properties 2))))
-       ((thing-at-point-looking-at org-nlink-word-regexp)
-        (cons (cons (match-beginning 1)
-                    (match-end 1))
-              nil)))))))
+      (if (and (get-char-property (point) 'org-emphasis)
+               (when-let (face (get-text-property (point) 'face))
+                 (and (listp face)
+                      (cl-intersection face
+                                       '(verbatim
+                                         italic
+                                         bold
+                                         org-verbatim
+                                         org-code)))))
+          (cond
+           ((thing-at-point-looking-at org-emph-re)
+            (cons (org-nlink--matching-bound-1)
+                  (cons (org-nlink--sanitize-target (match-string-no-properties 4))
+                        nil)))
+           ((thing-at-point-looking-at org-verbatim-re)
+            (cons (org-nlink--matching-bound-1)
+                  (cons (org-nlink--sanitize-target (match-string-no-properties 4))
+                        nil)))
+           (t
+            ;; Fallback
+            (org-nlink--thing-fallback-1)))
+        (org-nlink--thing-fallback-1))))))
+
+(defun org-nlink--thing-fallback-1 ()
+  "Fallback cases of `org-nlink-thing'."
+  (cond
+   ((thing-at-point-looking-at org-link-bracket-re)
+    (cons (cons (match-beginning 0)
+                (match-end 0))
+          (cons (org-nlink--sanitize-target (match-string-no-properties 1))
+                (match-string-no-properties 2))))
+   ((thing-at-point-looking-at org-nlink-word-regexp)
+    (cons (cons (match-beginning 1)
+                (match-end 1))
+          nil))))
+
+(defun org-nlink--matching-bound-1 ()
+  "Return a sane bound of inline matching."
+  (cons (save-match-data
+          (save-excursion
+            (goto-char (match-beginning 0))
+            ;; Apparently, org-emph-re can match text starting with
+            ;; space. Skip space.
+            (if (looking-at (rx (+ (or space (syntax open-parenthesis)))))
+                (match-end 0)
+              (point))))
+        (save-match-data
+          (save-excursion
+            (goto-char (match-end 0))
+            (if (looking-back (rx (+ (or space punct
+                                         (syntax close-parenthesis))))
+                              (match-beginning 0))
+                (match-beginning 0)
+              (point))))))
 
 (defun org-nlink--sanitize-target (string)
   (let ((string (org-nlink--sanitize-target-1 string))
