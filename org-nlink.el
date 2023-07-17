@@ -251,17 +251,24 @@ link. Only fuzzy links are handled."
     (unless (derived-mode-p 'org-mode)
       (user-error "This function must be run in org-mode"))
     (org-with-wide-buffer
-     (let ((use-cache nil))
+     (let ((use-cache nil)
+           (archive-regexp (regexp-quote (format ":%s:" org-archive-tag)))
+           result)
        (org-nlink-with-cache-disabled
-        (org-map-entries
-         (lambda ()
-           (prog1 (list :olp (mapcar #'org-link-display-format
+        (goto-char (point-min))
+        (setq org-outline-path-cache nil)
+        (while (re-search-forward org-complex-heading-regexp nil t)
+          (if (and (match-string 5)
+                   (string-match-p archive-regexp (match-string 5)))
+              (org-end-of-subtree)
+            (push (list :olp (mapcar #'org-link-display-format
                                      (org-get-outline-path 'self use-cache))
                         :marker (point-marker)
                         :targets (org-nlink--scan-targets (org-entry-end-position))
                         :heading (org-link-display-format (org-get-heading)))
-             (unless use-cache (setq use-cache t))))
-         nil nil 'archive))))))
+                  result))
+          (unless use-cache (setq use-cache t)))
+        result)))))
 
 (defun org-nlink--scan-targets (&optional bound)
   "Return a list of link targets."
