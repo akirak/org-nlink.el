@@ -435,9 +435,16 @@ pair of two or three angles."
                                    (goto-char point)))))
                              ,(concat string "%?")
                              ;; Avoid annoying warnings
-                             :after-finalize org-nlink--refresh-cache)))
+                             :after-finalize
+                             ,(if (string-match-p org-radio-target-regexp string)
+                                  #'org-nlink--update-radio
+                                #'org-nlink--refresh-cache))))
     (org-nlink-with-cache-disabled
      (org-capture))))
+
+(defun org-nlink--update-radio ()
+  (org-nlink--refresh-cache)
+  (org-update-radio-target-regexp))
 
 (defun org-nlink--refresh-cache ()
   (when (fboundp 'org-element-cache-refresh)
