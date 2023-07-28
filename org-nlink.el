@@ -117,7 +117,8 @@ link. Only fuzzy links are handled."
           (progn
             (widen)
             (goto-char point))
-        (set-buffer orig-buffer)))))
+        (set-buffer orig-buffer)
+        nil))))
 
 (defun org-nlink-read-target (prompt)
   "Returns a cons cell of a chosen target and its plist."
