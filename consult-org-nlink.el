@@ -129,12 +129,12 @@ super link when the user selects a heading. You need
               (org-super-links-insert-link))
             (when-let (link (and (thing-at-point-looking-at org-link-bracket-re)
                                  (match-string-no-properties 1)))
-              (delete-region (match-beginning 0) (match-end 0))
-              (insert (org-link-make-string
-                       link
-                       (or text
-                           (consult-org-nlink--ask-description
-                            (match-string-no-properties 1)))))))
+              (let ((description (match-string-no-properties 2)))
+                (delete-region (match-beginning 0) (match-end 0))
+                (insert (org-link-make-string
+                         link
+                         (or text
+                             (consult-org-nlink--ask-description description)))))))
         (org-with-point-at (plist-get plist :marker)
           (let ((inhibit-message t))
             (org-store-link nil 'interactive)))
