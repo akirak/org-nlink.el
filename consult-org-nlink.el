@@ -127,7 +127,7 @@ super link when the user selects a heading. You need
                 (org-super-links-store-link)))
             (save-excursion
               (org-super-links-insert-link))
-            (when-let (link (and (thing-at-point org-link-bracket-re)
+            (when-let (link (and (thing-at-point-looking-at org-link-bracket-re)
                                  (match-string-no-properties 1)))
               (delete-region (match-beginning 0) (match-end 0))
               (insert (org-link-make-string
