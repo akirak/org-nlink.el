@@ -134,26 +134,29 @@ super link when the user selects a heading. You need
                 (insert (org-link-make-string
                          link
                          (or text
-                             (consult-org-nlink--ask-description description)))))))
+                             (consult-org-nlink--ask-description description
+                                                                 link)))))))
         (org-with-point-at (plist-get plist :marker)
           (let ((inhibit-message t))
             (org-store-link nil 'interactive)))
-        (let ((link (pop org-stored-links)))
+        (let* ((link (pop org-stored-links))
+               (target (car link)))
           (insert (org-link-make-string
-                   (car link)
+                   target
                    (or text
-                       (consult-org-nlink--ask-description
-                        (nth 1 link)))))))
+                       (consult-org-nlink--ask-description (nth 1 link)
+                                                           target))))))
     (error "Not found %s" olp-text)))
 
-(defun consult-org-nlink--ask-description (default)
+(defun consult-org-nlink--ask-description (default link)
   (let ((string (read-from-minibuffer
                  (format-prompt "Description" default)
                  nil nil nil nil default
                  'inherit)))
-    (unless (or (string-empty-p string)
-                (equal string default))
-      string)))
+    (unless (equal string link)
+      (if (string-empty-p string)
+          default
+        string))))
 
 ;;;###autoload
 (defun consult-org-nlink-isearch ()
