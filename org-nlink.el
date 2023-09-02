@@ -445,8 +445,24 @@ pair of two or three angles."
 
 (defun org-nlink--update-radio ()
   (org-nlink--refresh-cache)
-  (with-current-buffer (org-base-buffer (current-buffer))
-    (org-update-radio-target-regexp)))
+  (let ((parent-buffer (org-base-buffer (current-buffer))))
+    (with-current-buffer parent-buffer
+      (org-update-radio-target-regexp))
+    (org-nlink-update-radio-target-regexps parent-buffer)))
+
+(defun org-nlink-update-radio-target-regexps (parent-buffer)
+  (let ((new-regexp (buffer-local-value 'org-target-link-regexp parent-buffer)))
+    (dolist (buffer (buffer-list))
+      (when (and (not (equalp buffer parent-buffer))
+                 (equal (buffer-base-buffer buffer)
+                        parent-buffer))
+        (with-current-buffer parent-buffer
+          (when (and (derived-mode-p 'org-mode)
+                     (not (equal org-target-link-regexp new-regexp)))
+            (setq-local org-target-link-regexp new-regexp)
+            (save-excursion
+              (goto-char (point-min))
+              (org-activate-target-links nil))))))))
 
 (defun org-nlink--refresh-cache ()
   (when (fboundp 'org-element-cache-refresh)
