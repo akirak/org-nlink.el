@@ -445,7 +445,8 @@ pair of two or three angles."
 
 (defun org-nlink--update-radio ()
   (org-nlink--refresh-cache)
-  (org-update-radio-target-regexp))
+  (with-current-buffer (org-base-buffer (current-buffer))
+    (org-update-radio-target-regexp)))
 
 (defun org-nlink--refresh-cache ()
   (when (fboundp 'org-element-cache-refresh)
