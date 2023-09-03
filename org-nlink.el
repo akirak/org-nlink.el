@@ -453,7 +453,7 @@ pair of two or three angles."
 (defun org-nlink-update-radio-target-regexps (parent-buffer)
   (let ((new-regexp (buffer-local-value 'org-target-link-regexp parent-buffer)))
     (dolist (buffer (buffer-list))
-      (when (and (not (equalp buffer parent-buffer))
+      (when (and (not (equal buffer parent-buffer))
                  (equal (buffer-base-buffer buffer)
                         parent-buffer))
         (with-current-buffer parent-buffer
