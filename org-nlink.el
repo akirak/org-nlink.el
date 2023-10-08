@@ -375,7 +375,8 @@ negative, it selects words before the point."
   (let ((string (org-nlink--sanitize-target-1 string))
         (case-fold-search nil))
     (if (or (org-nlink--proper-noun-p string)
-            (org-nlink--acronym-p string))
+            (org-nlink--acronym-p string)
+            (org-nlink--symbol-p string))
         string
       (downcase string))))
 
@@ -384,6 +385,9 @@ negative, it selects words before the point."
 
 (defun org-nlink--acronym-p (string)
   (string-match-p (rx bol anything (*? anything) upper) string))
+
+(defun org-nlink--symbol-p (string)
+  (not (string-match-p (rx bos (+ (any alnum space)) eos) string)))
 
 (defun org-nlink--proper-noun-p (string)
   (seq-find #'org-nlink--capital-word-p (cdr (split-string string " "))))

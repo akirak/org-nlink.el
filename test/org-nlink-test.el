@@ -18,6 +18,9 @@
   (it "retains words that look like proper nouns"
     (expect (org-nlink--sanitize-target "Ho Chi Minh")
             :to-equal "Ho Chi Minh"))
+  (it "retains words that look like symbols (or monospaced text)"
+    (expect (org-nlink--sanitize-target "/User/huahua")
+            :to-equal "/User/huahua"))
   (it "downcases words"
     (expect (org-nlink--sanitize-target "Normal person")
             :to-equal "normal person")))
