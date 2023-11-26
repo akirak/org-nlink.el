@@ -443,16 +443,16 @@ pair of two or three angles."
                              :after-finalize
                              ,(if (string-match-p org-radio-target-regexp string)
                                   #'org-nlink--update-radio
-                                #'org-nlink--refresh-cache))))
+                                #'org-nlink--cache-reset))))
     (org-nlink-with-cache-disabled
      (org-capture))))
 
 (defun org-nlink--update-radio ()
-  (org-nlink--refresh-cache)
   (let ((parent-buffer (org-base-buffer (current-buffer))))
     (with-current-buffer parent-buffer
       (org-update-radio-target-regexp))
-    (org-nlink-update-radio-target-regexps parent-buffer)))
+    (org-nlink-update-radio-target-regexps parent-buffer)
+    (org-nlink--cache-reset)))
 
 (defun org-nlink-update-radio-target-regexps (parent-buffer)
   (let ((new-regexp (buffer-local-value 'org-target-link-regexp parent-buffer)))
@@ -467,6 +467,10 @@ pair of two or three angles."
             (save-excursion
               (goto-char (point-min))
               (org-activate-target-links nil))))))))
+
+(defun org-nlink--cache-reset ()
+  (when (fboundp 'org-element-cache-reset)
+    (org-element-cache-reset)))
 
 (defun org-nlink--refresh-cache ()
   (when (fboundp 'org-element-cache-refresh)
