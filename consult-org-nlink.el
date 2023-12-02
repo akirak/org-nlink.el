@@ -49,7 +49,8 @@
 If this option is t, `consult-org-nlink-insert' command insert a
 super link when the user selects a heading. You need
 `org-super-links' library to use this feature."
-  :type 'boolean)
+  :type '(choice boolean
+                 (const :tag "Ask" ask)))
 
 (defun consult-org-nlink--sources ()
   "Return consult sources."
@@ -116,11 +117,14 @@ super link when the user selects a heading. You need
 (defun consult-org-nlink--insert-heading-link (olp-text &optional text)
   "Insert a link to a heading."
   (if-let (plist (gethash olp-text org-nlink-heading-cache))
-      (if (and consult-org-nlink-insert-super-link
+      (if (and (not (null consult-org-nlink-insert-super-link))
                (or (require 'org-super-links nil t)
                    (progn
                      (message "org-super-links is not available")
-                     nil)))
+                     nil))
+               (cl-case consult-org-nlink-insert-super-link
+                 (ask (yes-or-no-p "Insert a backlink? "))
+                 (otherwise t)))
           (progn
             (org-with-point-at (plist-get plist :marker)
               (let ((inhibit-message t))
