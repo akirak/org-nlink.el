@@ -10,25 +10,14 @@
     };
     compat = {
       flake = false;
-      type = "git";
-      url = "https://git.sr.ht/~pkal/compat";
+      owner = "emacs-compat";
+      repo = "compat";
+      type = "github";
     };
     consult = {
       flake = false;
       owner = "minad";
       repo = "consult";
-      type = "github";
-    };
-    consult-org-nlink = {
-      flake = false;
-      owner = "akirak";
-      repo = "org-nlink.el";
-      type = "github";
-    };
-    org-nlink = {
-      flake = false;
-      owner = "akirak";
-      repo = "org-nlink.el";
       type = "github";
     };
   };

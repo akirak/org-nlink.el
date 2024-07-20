@@ -1,0 +1,61 @@
+{
+  "nodes": {
+    "buttercup": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1721261696,
+        "narHash": "sha256-7K4QtQnrO6uB7laTpwfNrq/foAnIveGEia/RK8Q28+0=",
+        "owner": "jorgenschaefer",
+        "repo": "emacs-buttercup",
+        "rev": "dfbef2177209e3a045e981b7d2956ec46ce3b25b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jorgenschaefer",
+        "repo": "emacs-buttercup",
+        "type": "github"
+      }
+    },
+    "compat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1720462948,
+        "narHash": "sha256-IrShpeA17hFAzZsOjGk92OifWucL0XrNPFD5qBiShGc=",
+        "owner": "emacs-compat",
+        "repo": "compat",
+        "rev": "09dce8a193c5a70277512263782b82fa1cba84c0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "emacs-compat",
+        "repo": "compat",
+        "type": "github"
+      }
+    },
+    "consult": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1721126643,
+        "narHash": "sha256-awBUknAEmuRNP+xT1iJTMvfAY7b0ufcodLTdCH3o0A8=",
+        "owner": "minad",
+        "repo": "consult",
+        "rev": "41d382c9da9a84ab5391ee906e24f7126d03bd53",
+        "type": "github"
+      },
+      "original": {
+        "owner": "minad",
+        "repo": "consult",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "buttercup": "buttercup",
+        "compat": "compat",
+        "consult": "consult"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
