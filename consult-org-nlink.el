@@ -1,6 +1,6 @@
 ;;; consult-org-nlink.el --- Consult interface for org-nlink -*- lexical-binding: t -*-
 
-;; Copyright (C) 2022 Akira Komamura
+;; Copyright (C) 2022-2024 Akira Komamura
 
 ;; Author: Akira Komamura <akira.komamura@gmail.com>
 ;; Version: 0.1
