@@ -4,7 +4,7 @@
 
 ;; Author: Akira Komamura <akira.komamura@gmail.com>
 ;; Version: 0.1
-;; Package-Requires: ((emacs "28.2"))
+;; Package-Requires: ((emacs "28.1") (compat "29"))
 ;; Keywords: convenience outlines
 ;; URL: https://github.com/akirak/org-nlink.el
 
@@ -33,6 +33,7 @@
 ;;; Code:
 
 (require 'org)
+(require 'compat-29)
 
 ;; Silence byte compiler
 (defvar org-capture-entry)
