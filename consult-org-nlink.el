@@ -32,11 +32,16 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+(require 'subr-x)
 (require 'consult)
 (require 'org-nlink)
+(require 'pcase)
+(require 'seq)
 
 (declare-function org-super-links-insert-link "ext:org-super-links")
 (declare-function org-super-links-store-link "ext:org-super-links")
+(declare-function thing-at-point-looking-at "ext:thingatpt")
 
 (defgroup consult-org-nlink nil
   "Consult interface for org-nlink."
@@ -169,7 +174,7 @@ super link when the user selects a heading. You need
 You can bind this command in `isearch-mode-map'."
   (interactive)
   (pcase-exhaustive isearch-match-data
-    (`(,begin ,end . ,_)
+    (`(,begin . ,_)
      ;; Normalize the matched string into one that doesn't contain newlines.
      (pcase-let*
          ((`(,begin . ,end) (save-excursion
