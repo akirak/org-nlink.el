@@ -4,7 +4,7 @@
 
 ;; Author: Akira Komamura <akira.komamura@gmail.com>
 ;; Version: 0.1
-;; Package-Requires: ((emacs "26.1") (org-nlink "0.1") (consult "0.19"))
+;; Package-Requires: ((emacs "28.1") (org-nlink "0.1") (consult "1.7"))
 ;; Keywords: convenience outlines
 ;; URL: https://github.com/akirak/org-nlink.el
 
