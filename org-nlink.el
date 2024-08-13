@@ -323,7 +323,6 @@ negative, it selects words before the point."
                       (cl-intersection face
                                        '(verbatim
                                          italic
-                                         bold
                                          org-verbatim
                                          org-code)))))
           (cond
